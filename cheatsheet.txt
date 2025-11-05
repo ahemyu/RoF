@@ -1,6 +1,15 @@
 ROS 2 CHEATSHEET 
 ================================
 
+PACKAGE CREATION
+----------------
+Create new C++ package with dependencies:
+  cd ~/ros2_ws/src
+  ros2 pkg create --build-type ament_cmake --dependencies <dep1> <dep2> --node-name <node_name> <package_name>
+
+Example with common ROS dependencies:
+  ros2 pkg create --build-type ament_cmake --dependencies rclcpp std_msgs --node-name my_node my_package
+
 WORKSPACE SETUP
 ---------------
 Build workspace:
@@ -19,17 +28,6 @@ Source workspace (do this after every build OR add to .bashrc):
 
 Add to .bashrc for automatic sourcing (run once, then open new terminals):
   echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
-
-
-PACKAGE CREATION
-----------------
-Create new C++ package with dependencies:
-  cd ~/ros2_ws/src
-  ros2 pkg create --build-type ament_cmake --dependencies <dep1> <dep2> --node-name <node_name> <package_name>
-
-Example with common ROS dependencies:
-  ros2 pkg create --build-type ament_cmake --dependencies rclcpp std_msgs --node-name my_node my_package
-
 
 RUNNING NODES
 -------------
@@ -66,6 +64,36 @@ List all running nodes:
 Show info about a specific node:
   ros2 node info /<node_name>
 
+
+LAUNCH files
+-------------
+inside a package create a launch directory
+inside that dir create a file called package_name_launch.py
+example: 
+from launch import LaunchDescription
+from launch_ros.actions import Node
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='my_pubsub_package',
+            namespace='',
+            executable='publisher_node',
+            name='minimal_publisher'
+        ),
+        Node(
+            package='my_pubsub_package',
+            namespace='',
+            executable='subscriber_node',
+            name='minimal_subscriber'
+        ),
+        ])
+then edit the CMakeLists file with this entry: 
+install(DIRECTORY
+        launch
+        DESTINATION share/${PROJECT_NAME}/
+)
+then after building and sourcing, the launch file (and thus all nodes that are defined itside it) can be run with: 
+ros2 launch <package_name> <launch_file_name.py>
 
 DEVELOPMENT WORKFLOW
 --------------------
