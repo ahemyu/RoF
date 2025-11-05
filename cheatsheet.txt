@@ -1,0 +1,124 @@
+ROS 2 CHEATSHEET 
+================================
+
+WORKSPACE SETUP
+---------------
+Build workspace:
+  cd ~/ros2_ws
+  colcon build --symlink-install
+  
+Build specific packages only:
+  colcon build --symlink-install --packages-select <package_name1> <package_name2>
+
+Build with debug information:
+  colcon build --symlink-install --packages-select <package_name> --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
+
+Source workspace (do this after every build OR add to .bashrc):
+  cd ~/ros2_ws
+  . install/setup.bash
+
+Add to .bashrc for automatic sourcing (run once, then open new terminals):
+  echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
+
+
+PACKAGE CREATION
+----------------
+Create new C++ package with dependencies:
+  cd ~/ros2_ws/src
+  ros2 pkg create --build-type ament_cmake --dependencies <dep1> <dep2> --node-name <node_name> <package_name>
+
+Example with common ROS dependencies:
+  ros2 pkg create --build-type ament_cmake --dependencies rclcpp std_msgs --node-name my_node my_package
+
+
+RUNNING NODES
+-------------
+Run a node from a package:
+  ros2 run <package_name> <executable_name>
+
+Example:
+  ros2 run my_pubsub_package publisher_node
+
+
+TOPIC TOOLS
+-----------
+List all active topics:
+  ros2 topic list
+
+Show detailed info about a specific topic:
+  ros2 topic info /<topic_name>
+
+Display messages being published on a topic in real-time:
+  ros2 topic echo /<topic_name>
+
+Publish a message manually to a topic:
+  ros2 topic pub /<topic_name> <msg_type> "<msg_content>"
+
+Example for String message:
+  ros2 topic pub /my_topic std_msgs/msg/String "data: 'hello_world'"
+
+
+NODE TOOLS
+----------
+List all running nodes:
+  ros2 node list
+
+Show info about a specific node:
+  ros2 node info /<node_name>
+
+
+DEVELOPMENT WORKFLOW
+--------------------
+Typical development cycle:
+1. Edit your C++ code in src directory
+2. cd ~/ros2_ws
+3. colcon build --symlink-install
+4. . install/setup.bash (or open new terminal if in .bashrc)
+5. ros2 run <package_name> <node_name>
+
+For debugging:
+1. Build with debug info (see build command above)
+2. Run the node in one terminal
+3. Open VS Code from workspace root: code .
+4. Use Run and Debug panel to attach to the running node
+
+
+FILE LOCATIONS
+--------------
+Source code: ~/ros2_ws/src/<package_name>/src/
+Build artifacts: ~/ros2_ws/build/
+Installed executables: ~/ros2_ws/install/
+Package metadata: ~/ros2_ws/src/<package_name>/package.xml
+Build configuration: ~/ros2_ws/src/<package_name>/CMakeLists.txt
+
+
+COMMON MESSAGE TYPES
+--------------------
+String: std_msgs/msg/String
+Integer types: std_msgs/msg/Int8, Int16, Int32, Int64
+Float types: std_msgs/msg/Float32, Float64
+Boolean: std_msgs/msg/Bool
+
+
+FREQUENCY CALCULATIONS
+----------------------
+Timer interval in milliseconds = 1000 / frequency_in_Hz
+Examples:
+  1 Hz = 1000ms
+  10 Hz = 100ms
+  20 Hz = 50ms
+  100 Hz = 10ms
+
+TROUBLESHOOTING
+---------------
+If "package not found" error after building:
+  - Make sure you sourced: . install/setup.bash
+  - Or open a new terminal if you added sourcing to .bashrc
+
+If changes not taking effect:
+  - For C++: Must rebuild with colcon build
+  - For Python/launch files with --symlink-install: Should work without rebuild
+  
+If build fails:
+  - Check CMakeLists.txt has correct executable names
+  - Check package.xml has all dependencies
