@@ -39,11 +39,10 @@ void AdvancedRobotControl::laser_front_callback(
   // If current measured value is within the measuring range of the sensor
   // save in variable
 
-
-
-
-
-
+  if (msg->range >= 0.1 && msg->range <= 10.0){
+    // valid so save in class var
+    AdvancedRobotControl::current_distance_front_ = msg->range;
+  }
 }
 
 void AdvancedRobotControl::laser_side_callback(
